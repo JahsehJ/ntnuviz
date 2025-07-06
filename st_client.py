@@ -41,6 +41,14 @@ year = c.selectbox("選擇年級", ("1", "2", "3", "4", "碩", "博"))
 :violet-badge[回報問題: jahsehjaeger@proton.me]
 """
 
+
+@st.fragment
+def download_csv(csv: bytes) -> None:
+    st.download_button(
+        "匯出 `.csv` 檔", data=csv, file_name="課表.csv", mime="text/csv"
+    )
+
+
 if file:
     df = pd.read_excel(file, ntnuviz.SHEET_NAME)
     timetable = ntnuviz.timetable_from_df(df, year)
@@ -48,10 +56,13 @@ if file:
     def html_escape_and_replace_linebreak(x) -> str:
         return escape(str(x)).replace("\n", "<br>")
 
-    html = ntnuviz.timetable_to_df(timetable).to_html(
+    timetable_df = ntnuviz.timetable_to_df(timetable)
+    html = timetable_df.to_html(
         na_rep="",
         formatters=[html_escape_and_replace_linebreak for _ in range(5)],
         escape=False,
         border=0,
     )
+
     st.markdown(html, unsafe_allow_html=True)
+    download_csv(timetable_df.to_csv().encode("utf-8"))
