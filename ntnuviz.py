@@ -23,7 +23,7 @@ def main() -> None:
         df = pd.read_excel(f, sheet_name=SHEET_NAME)
 
     timetable = timetable_from_df(df, year)
-    timetable_to_df(timetable).to_excel(OUTPUT_PATH)
+    timetable_to_df(timetable).to_excel(Path(OUTPUT_PATH))
 
 
 def timetable_from_df(
@@ -45,19 +45,9 @@ def timetable_from_df(
 
         for r in raw_time_locations:
             weekday, period_range, _location = r.split(sep=" ", maxsplit=2)
-            start_end = tuple(
-                map(lambda x: periods.index(x), period_range.split("-"))
-            )
-            length = len(start_end)
-
-            if length == 0 or length > 2:
-                raise ValueError("無法讀取課程時間")
-            elif length == 1:
-                start = start_end[0]
-                end = start_end[0]
-            else:  # length == 2
-                start = start_end[0]
-                end = start_end[1]
+            parts = period_range.split("-")
+            start = periods.index(parts[0])
+            end = periods.index(parts[-1])
 
             for period in range(start, end + 1):
                 timetable[weekday][str(period)].append(course_str)
