@@ -6,15 +6,21 @@ ntnuviz turns raw course data into a readable timetable.
 
 The project includes:
 
-- an independent python script that exports the timetable as `.xlsx`
-- a [`streamlit`](https://streamlit.io) web client.
+- a standalone Python script that exports the timetable as `.xlsx`
+- a [`Streamlit`](https://streamlit.io) web client
 
-Dependencies: `pandas`, `openpyxl`, `xlrd` (+ `streamlit` for the web client.)
+Dependencies:
 
-### Independent Python Script
+- `pandas`
+- `openpyxl`
+- `xlrd`
+- `Jinja2`
+- `streamlit` (for the web client)
 
-Run `python3 ntnuviz.py <year(年級)>`. It defaults to take `export.xls` in your working directory and then convert it into `課表.xlsx`.
+### Standalone Python Script
+
+Run `python3 ntnuviz.py <year(年級)>`. It takes `export.xls` in your working directory and then converts it into `課表.xlsx`.
 
 ### Web Client
 
-Run `streamlit run st_client.py` and it will serve a local HTTP server.
+Run `streamlit run st_client.py` to start a local HTTP server.
