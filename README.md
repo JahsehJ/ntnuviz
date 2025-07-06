@@ -1,13 +1,13 @@
 # ntnuviz
 
-ntnuviz turns raw course data into readable timetable.
+ntnuviz turns raw course data into a readable timetable.
 
 ## Run Locally
 
 The project includes:
 
--   an independent python script that exports the timetable as `.xlsx`
--   a [`streamlit`](https://streamlit.io) web client.
+- an independent python script that exports the timetable as `.xlsx`
+- a [`streamlit`](https://streamlit.io) web client.
 
 Dependencies: `pandas`, `openpyxl`, `xlrd` (+ `streamlit` for the web client.)
 
