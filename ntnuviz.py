@@ -31,15 +31,17 @@ def main() -> None:
     timetable_to_df(timetable).to_excel(Path(OUTPUT_PATH))
 
 
+def defaultdict_list_factory() -> list[list[str]]:
+    return [[] for _ in default_periods]
+
+
 def timetable_from_df(
     df: pd.DataFrame,
     year: str,
     periods: list[str] = default_periods,
-) -> tuple[defaultdict[str, defaultdict[str, list[str]]], list[str]]:
+) -> tuple[defaultdict[str, list[list[str]]], list[str]]:
     """Return a timetable and nonscheduled courses."""
-    timetable = defaultdict[str, defaultdict[str, list[str]]](
-        lambda: defaultdict(list)
-    )
+    timetable = defaultdict[str, list[list[str]]](defaultdict_list_factory)
     nonscheduled_courses: list[str] = []
 
     for _, row in df.iterrows():
@@ -65,21 +67,18 @@ def timetable_from_df(
             end = periods.index(parts[-1])
 
             for period in range(start, end + 1):
-                timetable[weekday][str(period)].append(course_str)
+                timetable[weekday][period].append(course_str)
 
     return timetable, nonscheduled_courses
 
 
 def timetable_to_df(
-    timetable: defaultdict[str, defaultdict[str, list[str]]],
+    timetable: defaultdict[str, list[list[str]]],
     periods: list[str] = default_periods,
     weekdays: list[str] = default_weekdays,
 ) -> pd.DataFrame:
     data = {
-        weekday: {
-            period: "\n\n".join(courses)
-            for period, courses in weekday_periods.items()
-        }
+        weekday: ["\n\n".join(courses) for courses in weekday_periods]
         for weekday, weekday_periods in timetable.items()
     }
 
