@@ -1,5 +1,6 @@
 from collections import defaultdict
 from pathlib import Path
+from re import search
 from sys import argv
 
 import pandas as pd
@@ -22,7 +23,11 @@ def main() -> None:
     with open(Path(XLS_PATH), "rb") as f:
         df = pd.read_excel(f, sheet_name=SHEET_NAME)
 
-    timetable = timetable_from_df(df, year)
+    timetable, unscheduled = timetable_from_df(df, year)
+    if unscheduled:
+        print("下列為不定期課程，請自行查詢：")
+        for c in unscheduled:
+            print(c)
     timetable_to_df(timetable).to_excel(Path(OUTPUT_PATH))
 
 
@@ -30,10 +35,12 @@ def timetable_from_df(
     df: pd.DataFrame,
     year: str,
     periods: list[str] = default_periods,
-) -> defaultdict[str, defaultdict[str, list[str]]]:
+) -> tuple[defaultdict[str, defaultdict[str, list[str]]], list[str]]:
+    """Return a timetable and unscheduled courses."""
     timetable = defaultdict[str, defaultdict[str, list[str]]](
-        lambda: defaultdict[str, list[str]](list)
+        lambda: defaultdict(list)
     )
+    unscheduled_courses: list[str] = []
 
     for _, row in df.iterrows():
         row_year = row.get(YEAR)
@@ -43,8 +50,16 @@ def timetable_from_df(
         course_str = f"{row[CLASS_ID]} {row[CLASS_NAME]}"
         raw_time_locations = str(row[TIME_LOCATION]).split(", ")
 
+        # "四 2-3 和平 誠101", "四 2 和平 誠101", "◎面授/同步", "◎密集課程"...
         for r in raw_time_locations:
-            weekday, period_range, _location = r.split(sep=" ", maxsplit=2)
+            weekday_period = search(
+                r"([一二三四五])\s([0-9A-Za-z]+(?:-[0-9A-Za-z]+)?)", r
+            )
+            if not weekday_period:
+                unscheduled_courses.append(course_str)
+                continue
+
+            weekday, period_range = weekday_period.groups()
             parts = period_range.split("-")
             start = periods.index(parts[0])
             end = periods.index(parts[-1])
@@ -52,7 +67,7 @@ def timetable_from_df(
             for period in range(start, end + 1):
                 timetable[weekday][str(period)].append(course_str)
 
-    return timetable
+    return timetable, unscheduled_courses
 
 
 def timetable_to_df(
