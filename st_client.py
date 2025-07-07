@@ -51,7 +51,7 @@ def download_csv(csv: bytes) -> None:
 
 if file:
     df = pd.read_excel(file, ntnuviz.SHEET_NAME)
-    timetable, unscheduled = ntnuviz.timetable_from_df(df, year)
+    timetable, nonscheduled = ntnuviz.timetable_from_df(df, year)
 
     def html_escape_and_replace_linebreak(x) -> str:
         return escape(str(x)).replace("\n", "<br>")
@@ -64,9 +64,9 @@ if file:
         border=0,
     )
 
-    if unscheduled:
+    if nonscheduled:
         st.write("下列為不定期課程，請自行查詢：")
-        for c in unscheduled:
+        for c in nonscheduled:
             st.markdown("- " + c)
     st.markdown(html, unsafe_allow_html=True)
     download_csv(timetable_df.to_csv().encode("utf-8"))

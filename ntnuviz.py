@@ -23,10 +23,10 @@ def main() -> None:
     with open(Path(XLS_PATH), "rb") as f:
         df = pd.read_excel(f, sheet_name=SHEET_NAME)
 
-    timetable, unscheduled = timetable_from_df(df, year)
-    if unscheduled:
+    timetable, nonscheduled = timetable_from_df(df, year)
+    if nonscheduled:
         print("下列為不定期課程，請自行查詢：")
-        for c in unscheduled:
+        for c in nonscheduled:
             print(c)
     timetable_to_df(timetable).to_excel(Path(OUTPUT_PATH))
 
@@ -36,11 +36,11 @@ def timetable_from_df(
     year: str,
     periods: list[str] = default_periods,
 ) -> tuple[defaultdict[str, defaultdict[str, list[str]]], list[str]]:
-    """Return a timetable and unscheduled courses."""
+    """Return a timetable and nonscheduled courses."""
     timetable = defaultdict[str, defaultdict[str, list[str]]](
         lambda: defaultdict(list)
     )
-    unscheduled_courses: list[str] = []
+    nonscheduled_courses: list[str] = []
 
     for _, row in df.iterrows():
         row_year = row.get(YEAR)
@@ -56,7 +56,7 @@ def timetable_from_df(
                 r"([一二三四五])\s([0-9A-Za-z]+(?:-[0-9A-Za-z]+)?)", r
             )
             if not weekday_period:
-                unscheduled_courses.append(course_str)
+                nonscheduled_courses.append(course_str)
                 continue
 
             weekday, period_range = weekday_period.groups()
@@ -67,7 +67,7 @@ def timetable_from_df(
             for period in range(start, end + 1):
                 timetable[weekday][str(period)].append(course_str)
 
-    return timetable, unscheduled_courses
+    return timetable, nonscheduled_courses
 
 
 def timetable_to_df(
