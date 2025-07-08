@@ -19,7 +19,7 @@ Dependencies:
 
 ### Standalone Python Script
 
-Run `python3 ntnuviz.py <year(年級)>`. It takes `export.xls` in your working directory and then converts it into `課表.xlsx`.
+Run `python3 ntnuviz.py <year(年級)>`. It takes `export.xls` in your working directory and then converts it into `課表.xlsx`. `<year>` must be 1, 2, 3 or 4.
 
 ### Web Client
 
