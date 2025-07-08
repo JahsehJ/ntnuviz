@@ -5,7 +5,5 @@
 !ntnuviz.py
 !st_client.py
 !requirements.txt
-!Dockerfile
 !README.md
 !.streamlit/config.toml
-!.dockerignore
