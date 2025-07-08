@@ -31,7 +31,7 @@ file = c.file_uploader(
     type="xls",
 )
 
-year = c.selectbox("選擇年級", ("1", "2", "3", "4", "碩", "博"))
+year = c.selectbox("選擇年級", ("1", "2", "3", "4"))
 
 """
 :orange-badge[請務必核對資料正確性]
